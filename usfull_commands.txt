@@ -1,0 +1,43 @@
+########################################################################################
+        IN THIS FILE THERE ARE A SERIES OF SPARSE USEFULL COMMANDS
+########################################################################################
+
+ > to print with awk the last and the one before the last column of a file 
+
+cat dummy.txt | awk '{print $NF, $(NF-1)}
+
+## In this case NF means last column usefull when you don't know it 
+
+
+ > to generate a random sorte file from a previous one
+
+cat list_of_ids.txt | sort -R
+
+## it sorts the file in random order based on the column considered with the option <-R>
+
+ 
+ > make sort consider even numbers in mathematical notation (3.4e117)
+
+LC_ALL=C sort -gk 3 examples.desktop
+
+## In this case -g sorts based on general numbers and k specifies the third column, but
+   LC_ALL=C tells sort to use a notation that is c-based and it consider even 3.4e117 otherwise 
+   this will be put toghether with other 3. numbers.
+
+
+ > to retrieve all fasta sequence from a file having a list of identifiers in another file
+
+for i in `cat nonhuman_kunitz_ids.txt`; do awk -v a=$i '$0~a {do {print  $0; getline} while($0 !~ /^>/); exit}' uniprot_sprot.fasta >> nonhuman_kunitz.fasta; done
+
+## nonhuman_kunitz_ids.txt contains sequence identifiers in a single column (first) and nothing else,
+   uniprot_sprot.fasta contains all the fasta sequences of the swiss-prot, nonhuman_kunitz.fasta is the 
+   output file we want to create with all the fasta sequences retrieved with the identifiers for non-human kuni
+   tz proteins. This command is doing a for loop in the nonhuman_kunitz_ids.txt file so i will be an identifier
+   for each loop (the id are unique), the single id will be passed to awk with the option < -v > , and saved 
+   into the variable a (a=$i), it will see if inside uniprot_sprot.fasta for each line it matches the something 
+   line by line. If it matches, does a do-while loop inside a {} brachets, in which it prints the match line 
+   and gets all the line after the aformentioned line until (while loop) a new line mathches '>' 
+   < while($0 !~ /^>/) > , and if it exits the do-while loop it exits even the awk command (; exit}'). 
+   Before starting with another id it appends it to the nonhuman_kunitz.fasta (>>)
+   then it repeats everithing with another id. 
+   the (; done) is obligatory to tell bash that the command has finished.
